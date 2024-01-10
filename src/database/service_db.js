@@ -9,7 +9,11 @@ const pool = require("./config_db.js");
     
     async getOneById(id){
       return await pool.query(`SELECT * FROM users WHERE id = '${id}';`)
-  }
+    }
+
+    async getOneByGmail(gmail){
+      return await pool.query(`SELECT * FROM users WHERE gmail = '${gmail}';`)
+    }
 
     async createNewUser(dto){
 

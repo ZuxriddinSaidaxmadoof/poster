@@ -14,9 +14,6 @@ class UserService{
 
     async registerService(dto,req,res){
         try{
-            if(!dto.fullName || !dto.gmail || !dto.password){
-                return new ResData("fullName, gmail, password must be require")
-            }
 
             dto.password = await hashPasword(dto.password);
 
@@ -26,6 +23,24 @@ class UserService{
             // await res.headers.set("token", token)
             res.setHeader('token', token);
             return new ResData("User created", 201, data.rows);
+        }catch(err){
+            console.log(err);
+            return new ResData(err.message || "something went wrong", 500, null, err);
+        }
+    }
+    async loginService(dto, req,res){
+        try{
+            const sqlService = new SqlService();
+
+            const currentUser = await sqlService.getOneByGmail(dto.gmail);
+            const user = currentUser.rows[0];
+            const checkLogin = await verifyPassword(dto.password, user.password);
+            if(!checkLogin){
+                return new ResData("Wrong password", 403)
+            }
+            const token = await getToken(user);
+            res.setHeader('token', token);
+            return new ResData("You successfully loged in", 200, user);
         }catch(err){
             console.log(err);
             return new ResData(err.message || "something went wrong", 500, null, err);
