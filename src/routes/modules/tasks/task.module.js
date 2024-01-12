@@ -1,7 +1,7 @@
 const {Router} = require("express");
 const router = Router();
-const {UserService} = require("./user.service.js");
-const {UserController} = require("./user.controller.js")
+const {UserService} = require("./task.service.js");
+const {UserController} = require("./task.controller.js")
 const {AuthorizationMiddleware} = require("../../../lib/midleware.js")
 
 const midlware = new AuthorizationMiddleware();
