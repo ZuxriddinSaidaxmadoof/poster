@@ -6,22 +6,23 @@ class UserController{
         this.#service = service;
     }
     
-    async getAllUsers(req,res){
+    async getTasks(req,res){
         try{
-            return await this.#service.getAllUsers()
+            const userId = req.params.user_id;
+            return await this.#service.getTasks(userId)
         }catch(err){
             console.log(err);
             return err;
         }
     }
 
-    async register(req,res){
+    async createTask(req,res){
         const dto = req.body;
         try{
-            if(!dto.fullName || !dto.gmail || !dto.password){
-                return new ResData("fullName, gmail, password must be require")
+            if(!dto.userId || !dto.title){
+                return new ResData("userId and title must be require");
             }
-            return await this.#service.registerService(dto, req,res);
+            return await this.#service.createTask(req,res);
             
         }catch(err){
             console.log(err);
@@ -29,13 +30,18 @@ class UserController{
         }
     }
 
-    async login(req,res){
+    async changeTaskDone(req,res){
         try{
-            const dto = req.body;
-            if(!dto.gmail || !dto.password){
-                return new ResData("gmail and password must be required")
-            }
-            return await this.#service.loginService(dto, req,res)
+            return await this.#service.update(req,res)
+        }catch(err){
+            console.log(err);
+            return err;
+        }
+    }
+
+    async deleteTask(req,res){
+        try{
+            return await this.#service.delete(req,res)
         }catch(err){
             console.log(err);
             return err;

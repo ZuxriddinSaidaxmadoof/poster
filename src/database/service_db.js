@@ -8,11 +8,15 @@ const pool = require("./config_db.js");
     }
     
     async getOneById(id){
-      return await pool.query(`SELECT * FROM users WHERE id = '$1';`, id)
+      try{
+        return await pool.query(`SELECT * FROM users WHERE id = $1;`, [id])
+      }catch(err){
+        return  err;
+      }
     }
 
     async getOneByGmail(gmail){
-      return await pool.query(`SELECT * FROM users WHERE gmail = '${gmail}';`)
+      return await pool.query(`SELECT * FROM users WHERE gmail = $1;`, [gmail]);
     }
 
     async createNewUser(dto){
@@ -34,17 +38,44 @@ const pool = require("./config_db.js");
     }
 
     async updateUserById(id){
-      return await pool.query(`UPDATE users SET role = 'super' where id = ${id};`)
+      return await pool.query(`UPDATE users SET role = 'super' where id = $1;`, [id]);
     }
 
     async deleteUser(id){
-        return await pool.query(`DELETE FROM users WHERE id = ${id};`);
+        return await pool.query(`DELETE FROM users WHERE id = $1;`, [id]);
     }
 
     async getCreatedDate(id){
-      return await pool.query(`SELECT EXTRACT(DAYS FROM (AGE(NOW(), created_at))) FROM users WHERE id = ${id};`)
+      return await pool.query(`SELECT EXTRACT(DAYS FROM (AGE(NOW(), created_at))) FROM users WHERE id = $1;`, [id]);
     }
 
 }
 
-module.exports = {SqlService}
+class TasckServiceDb{
+  async getTasksByUserId(userId){
+    return await pool.query('SELECT * FROM tasks WHERE user_id = $1;',[userId]);
+  }
+  async getTaskById(taskId){
+    try{
+      return await pool.query('SELECT * FROM tasks WHERE id = $1;',[taskId]);
+    }catch(err){
+      return err;
+    }
+  }
+  async createTaskForOne(dto){
+    return await pool.query('insert into tasks (user_id, title) values ( $1, $2 ) RETURNING *;', [dto.userId, dto.title]);
+  }
+  async changeIsDone(what, taskId){
+    return await pool.query('UPDATE tasks SET is_done = $1 where id = $2 RETURNING *;', [what, taskId]);
+  }
+  async deleteTask(taskId){
+    try{
+      return await pool.query('DELETE FROM tasks WHERE id = $1 RETURNING *;', [taskId]);
+    }catch(err){
+      return err;
+    }
+  }
+
+}
+
+module.exports = {SqlService, TasckServiceDb}

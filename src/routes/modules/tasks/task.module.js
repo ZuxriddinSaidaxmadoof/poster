@@ -8,19 +8,24 @@ const midlware = new AuthorizationMiddleware();
 const service = new UserService();
 const controller = new UserController(service);
 
-router.get("/users", midlware.checkUser, midlware.userRole, async(req,res) => {
-    const data = await controller.getAllUsers(req,res);
+router.get("/:user_id", midlware.checkUser, midlware.userRole, async(req,res) => {
+    const data = await controller.getTasks(req,res);
     res.status(data.statusCode || 500).json(data.data.rows)
 })
 
-router.post("/register", async(req,res) => {
-    const data = await controller.register(req,res);
+router.post("/create", async(req,res) => {
+    const data = await controller.createTask(req,res);
     res.status(data.statusCode || 500).json(data)
 })
 
-router.post("/login", async(req,res) => {
-    const data = await controller.login(req,res);
-    res.status(data.statusCode || 500).json(data)
+router.put("/update/:taskId", async(req,res) => {
+    const data = await controller.changeTaskDone(req,res);
+    res.status(data.statusCode || 500).json(data);
+})
+
+router.delete("/delete/:taskId", async(req,res) => {
+    const data = await controller.deleteTask(req,res);
+    res.status(data.statusCode || 500).json(data);
 })
 
 
