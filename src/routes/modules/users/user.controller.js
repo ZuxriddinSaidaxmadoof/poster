@@ -41,6 +41,15 @@ class UserController{
             return err;
         }
     }
+
+    async deleteUser(req,res){
+        try{
+            return await this.#service.deleteUser(req,res)
+        }catch(err){
+            console.log(err);
+            return err;
+        }
+    }
 }
 
 module.exports = {UserController};

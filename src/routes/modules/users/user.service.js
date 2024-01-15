@@ -46,6 +46,24 @@ class UserService{
             return new ResData(err.message || "something went wrong", 500, null, err);
         }
     }
+
+    async deleteUser(req,res){
+        try{
+            const userId = req.params.userId; 
+            const sqlService = new SqlService();
+
+            const currentUser = await sqlService.getOneById(userId);
+            if(currentUser.error || currentUser.rows == ""){
+                return new ResData("User not found", 404, currentUser.rows);
+            }
+
+            const deletedUser = await sqlService.deleteUser(userId)
+            return new ResData("User deleted successfully", 200, deletedUser.rows);
+        }catch(err){
+            console.log(err);
+            return new ResData(err.message || "something went wrong", 500, null, err);
+        }
+    }
 }
 
 module.exports = {UserService};

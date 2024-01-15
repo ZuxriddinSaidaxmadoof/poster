@@ -23,6 +23,11 @@ router.post("/login", async(req,res) => {
     res.status(data.statusCode || 500).json(data)
 })
 
+router.delete("/delete/:userId", async(req,res) => {
+    const data = await controller.deleteUser(req,res);
+    res.status(data.statusCode || 500).json(data)
+})
+
 
 module.exports = {router};
 

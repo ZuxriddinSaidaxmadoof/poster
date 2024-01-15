@@ -1,7 +1,5 @@
 const {SqlService, TasckServiceDb} = require("../../../database/service_db.js");
 const {ResData} = require("../../../lib/resData.js");
-const {getToken, verifyToken} = require("../../../lib/jwt.js")
-const {hashPasword, verifyPassword} = require("../../../lib/bcrypt.js");
 
 
 class UserService{
@@ -37,13 +35,13 @@ class UserService{
             const taskService = new TasckServiceDb();
 
             
-            const {rows} = await taskService.getTaskById(taskId);
-            if(rows){
-                const target = !(rows[0].isDone);
-                const data = await taskService.changeIsDone(target, taskId);
-                return new ResData(`Task updated to ${target}`, 200, data.rows);
+            const task = await taskService.getTaskById(taskId);
+            if(!task.rowCount){
+                return new ResData("Task not found", 404);
             }
-            return new ResData("Task not found", 404);
+            const target = !(task.rows[0].is_done);
+            const data = await taskService.changeIsDone(target, taskId);
+            return new ResData(`Task updated to ${target}`, 200, data.rows);
         }catch(err){
             console.log(err);
             return new ResData(err.message || "something went wrong", 500, null, err);
